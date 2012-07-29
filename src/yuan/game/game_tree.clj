@@ -14,3 +14,6 @@
              (if (pos? depth)
                (partial map (fn [tree] (limit-tree-depth tree :depth (dec depth))))
                (constantly ()))))
+
+(defn random-agent [tree]
+  (rand-nth (:moves tree)))

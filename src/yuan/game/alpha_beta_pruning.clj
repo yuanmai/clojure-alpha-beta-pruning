@@ -41,14 +41,16 @@
 
 (defn make-agent
   [turn-fn eval-fn]
-  (fn [{:keys [moves board] :as tree}]
+  (fn best-move [{:keys [moves board] :as tree} & {:keys [depth] :or {depth *ai-level*}}]
     {:pre [(seq moves)]}
     (binding [*turn-fn* turn-fn
               *eval-fn* eval-fn
               *current-player* (trace :turn (turn-fn board))]
       (let [ratings (trace :ratings
-                           (ab-get-rating-max (limit-tree-depth tree)
+                           (ab-get-rating-max (limit-tree-depth tree :depth depth)
                                               1
                                               -1))
             best (apply max ratings)]
-        (:board (nth moves (.indexOf ratings best)))))))
+        (if (and (pos? depth) (= best -1))
+          (best-move tree :depth (trace "being opportunistic" (dec depth)))
+          (nth moves (.indexOf ratings best)))))))
