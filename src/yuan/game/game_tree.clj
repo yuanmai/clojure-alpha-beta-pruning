@@ -1,4 +1,5 @@
-(ns yuan.game.game-tree)
+(ns yuan.game.game-tree
+  (:use [clojure.tools.trace]))
 
 (def ^:dynamic *ai-level* 5)
 
@@ -8,12 +9,14 @@
    :moves (map (partial game-tree make-move)
                   (make-move board))})
 
-(defn limit-tree-depth [tree & {:keys [depth] :or {depth *ai-level*}}]
-  (update-in tree
-             [:moves]
-             (if (pos? depth)
-               (partial map (fn [tree] (limit-tree-depth tree :depth (dec depth))))
-               (constantly ()))))
+(defn limit-tree-depth [tree]
+  (letfn [(f [tree depth]
+            (update-in tree
+                       [:moves]
+                       (if (pos? depth)
+                         (partial map (fn [tree] (f tree (dec depth))))
+                         (constantly ()))))]
+    (f tree *ai-level*)))
 
 (defn random-agent [tree]
   (rand-nth (:moves tree)))
