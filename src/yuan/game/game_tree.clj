@@ -3,6 +3,10 @@
 
 (def ^:dynamic *ai-level* 5)
 
+(def game-scores {:win 1
+                  :draw 0
+                  :lose -1})
+
 (defn game-tree
   [make-move board]
   {:board board

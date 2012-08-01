@@ -55,7 +55,9 @@
     (binding [*turn-fn* turn-fn
               *eval-fn* eval-fn
               *current-player* (trace :turn (turn-fn board))]
-      (let [f (opportunistic (comp (partial ab-get-rating-max 1 -1)
+      (let [f (opportunistic (comp (partial ab-get-rating-max
+                                            (game-scores :win)
+                                            (game-scores :lose))
                                    limit-tree-depth))
             ratings (trace :ratings (f tree))
             best (apply max ratings)]
